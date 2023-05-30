@@ -34,6 +34,17 @@ ultimoElementoLista (h:t) = ultimoElementoLista t
 removeUltimosElementos :: Int -> [a] -> [a]
 removeUltimosElementos n lista = take (length lista - n) lista
 
+removeEnesimo :: Int -> [Int] -> [Int]
+removeEnesimo _ [] = []
+removeEnesimo x (h:t)
+	| x == h = removeEnesimo x t
+	| otherwise = h: removeEnesimo x t
+
+removePares :: [Int] -> [Int]
+removePares [] = []
+removePares (h:t)
+	| h `mod` 2 == 0 = removePares t
+	| otherwise = h: removePares t
 
 iguais :: Bool
 iguais = let a = 2
@@ -92,7 +103,7 @@ somatorio x = if x > 0
 doisPontos :: (Float,Float) -> (Float,Float) -> Float
 doisPontos (x1,y1) (x2,y2) = sqrt( (x2-x1)^2 + (y2-y1)^2 )
 
-bisexto x = if x `mod` 4 == 0
+bisexto x = if x `mod` 4 == 0 && x `mod` 100 /= 0 || x `mod` 400 == 0
 	       then True
 	       else False
 
