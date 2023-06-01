@@ -165,3 +165,27 @@ comparaIdades x y = let (n1,i1,_,_) = bancoDeDados x
 		    in if (i1 > i2)
 		          then n1
 		       else n2
+funcaoPertenceX2 = [x^2 | x<-[1,2,3,4,5,6,7,8]]
+
+somaTupla (x,y) = x + y
+
+somaListaTuplas :: [(Int, Int)] -> [Int]
+somaListaTuplas [] = [] 
+somaListaTuplas (h:t) = somaTupla h: somaListaTuplas t
+
+alfabeto = ['a'..'z']
+
+verificaLista :: [Int] -> Int -> Bool
+verificaLista l x | x == 1 = listaImpar l
+		  | x == 2 = listaPar l
+		  | otherwise = False
+
+listaImpar :: [Int] -> Bool
+listaImpar [] = True
+listaImpar (x:y) | x `mod` 2 == 0 = False
+		 | otherwise = listaImpar y
+
+listaPar :: [Int] -> Bool
+listaPar [] = True
+listaPar (x:y) | x `mod` 2 /= 0 = False
+	       | otherwise = listaPar y
