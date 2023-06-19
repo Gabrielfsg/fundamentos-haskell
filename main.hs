@@ -189,3 +189,57 @@ listaPar :: [Int] -> Bool
 listaPar [] = True
 listaPar (x:y) | x `mod` 2 /= 0 = False
 	       | otherwise = listaPar y
+
+
+primo :: Int -> Int -> Int -> Bool
+primo _ 0 z 
+	| z == 2 = True
+	|otherwise = False
+primo x y z 
+	| x `mod` y == 0 = primo x (y-1) (z+1)
+	| otherwise = primo x (y-1) z
+	
+	
+ePrimo :: Int -> Bool
+ePrimo x = primo x x 0
+
+
+tamanhoLista :: [Int] -> Int
+tamanhoLista x = verificaTamanhoLista x 0
+
+verificaTamanhoLista :: [Int] -> Int -> Int
+verificaTamanhoLista [] z  = z
+verificaTamanhoLista (x:y) z = verificaTamanhoLista y (z+1)
+
+
+prefixo :: [Int] -> [Int] -> Bool
+prefixo [] _ = True
+prefixo (a:b) (c:d)
+		| a == c = prefixo b d
+		| otherwise = False
+		
+		
+inverte :: [Int] -> [Int]
+inverte [] = []
+inverte (x:y) = inverte y ++ [x]
+
+sufixo :: [Int] -> [Int] -> Bool
+sufixo x y = prefixo (inverte x) (inverte y) 
+
+verificaSeTaNaLista :: [Int] -> Int -> Bool
+verificaSeTaNaLista (x:y) z 
+	| x == z = True
+	|otherwise = verificaSeTaNaLista y z
+	
+somaLista :: [Int] -> Int
+somaLista [] = 0
+somaLista (x:y) = 1 + somaLista y 
+
+menor :: [Int] -> Int
+menor (x:y) = menorLista y x
+
+menorLista :: [Int] -> Int -> Int
+menorLista [] z = z
+menorLista (x:y) z
+	| x < z = menorLista y x
+	| otherwise = menorLista y z
