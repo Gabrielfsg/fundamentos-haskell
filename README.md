@@ -1,2 +1,2 @@
 # fundamentos-haskell
-Fundamentos da Linguagem Haskell
+Fundamentos da Linguagem de programação funcional Haskell.
