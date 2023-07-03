@@ -1,6 +1,5 @@
 import Data.Char (digitToInt)
 
-
 media y x = (y + x / 2)
 hipotenusa a b = sqrt( ( (a * a) + (b*b) ) )
 
@@ -10,6 +9,23 @@ verificaSeTaNaLista x (y:ys)
     | x == y    = True
     | otherwise = verificaSeTaNaLista x ys
 
+removePrimosLista :: [Int] -> [Int]
+removePrimosLista [] = []
+removePrimosLista (c:cs)
+	| primoVer c == True =  removePrimosLista cs
+	| otherwise = c: removePrimosLista cs
+
+primoVer :: Int -> Bool
+primoVer x = numPrimo x x 0
+
+numPrimo :: Int -> Int -> Int -> Bool
+numPrimo 0 _ _ = False
+numPrimo 1 _ _ = False
+numPrimo num cop cont
+	| cop == 0 && cont > 2 = False
+	| cop == 0 && cont == 2 = True
+	| num `mod` cop == 0 = numPrimo num (cop-1) (cont+1)
+	| otherwise = numPrimo num (cop-1) cont
 
 listaAte200 :: Integer -> [Integer]
 listaAte200 0 = [0]
@@ -226,10 +242,11 @@ inverte (x:y) = inverte y ++ [x]
 sufixo :: [Int] -> [Int] -> Bool
 sufixo x y = prefixo (inverte x) (inverte y) 
 
-verificaSeTaNaLista :: [Int] -> Int -> Bool
-verificaSeTaNaLista (x:y) z 
+verificaSeTaNaListaDef [] _ = False 
+verificaSeTaNaListaDef :: [Int] -> Int -> Bool
+verificaSeTaNaListaDef (x:y) z 
 	| x == z = True
-	|otherwise = verificaSeTaNaLista y z
+	|otherwise = verificaSeTaNaListaDef y z
 	
 somaLista :: [Int] -> Int
 somaLista [] = 0
@@ -243,3 +260,164 @@ menorLista [] z = z
 menorLista (x:y) z
 	| x < z = menorLista y x
 	| otherwise = menorLista y z
+
+adicionaInitLista :: [Int] -> Int -> [Int]
+adicionaInitLista x y = (y:x)
+
+adicionaFinalLista :: [Int] -> Int -> [Int]
+adicionaFinalLista [] y = [y]
+adicionaFinalLista (x:z) y = [x] ++ adicionaFinalLista z y 
+
+
+removeDuplicados :: [Int] -> [Int] -> [Int]
+removeDuplicados [] x = x
+removeDuplicados (a:b) x = if verificaSeTaNaListaDef x a
+                               then removeDuplicados b x
+                               else removeDuplicados b (x ++ [a])
+
+deletaNum :: [Int] -> Int -> [Int]
+deletaNum [] _ = []
+deletaNum (h:t) x 
+	| h == x = deletaNum t x
+	| otherwise = [h] ++ deletaNum t x
+
+deletaIndice :: [Int] -> Int -> [Int]
+deletaIndice (h:t) 0 = t
+deletaIndice (h:t) x = [h] ++ deletaIndice t (x-1)
+
+
+type Vertice = Int
+type Aresta = (Vertice,Vertice)
+type Grafo = [(Vertice, Vertice)]
+
+bancoGrafo :: Int -> Grafo
+bancoGrafo c 
+	| c == 1 = [(1,2),(2,3),(3,4),(2,5)]
+	| otherwise = []
+
+adicionarAresta :: Grafo -> Aresta -> Grafo
+adicionarAresta grafo aresta = aresta : grafo
+
+existeAresta :: Grafo -> Aresta -> Bool
+existeAresta grafo aresta = aresta `elem` grafo
+
+vizinho :: Grafo -> Int -> Int -> Bool
+vizinho [] _ _ =  False
+vizinho (h:t) x y
+	| h == (x,y) || h == (y,x) = True
+	| otherwise = vizinho t x y
+
+verificaValorListaIgualX :: [Int] -> Int -> Bool
+verificaValorListaIgualX [] _ = True
+verificaValorListaIgualX (c:cs) x
+		| c == x = verificaValorListaIgualX cs x
+		| otherwise = False
+
+contemAoMenosUm :: [Int] -> Int -> Bool
+contemAoMenosUm [] _ = False
+contemAoMenosUm (c:cs) x
+		| c == x = True
+		| otherwise = contemAoMenosUm cs x
+
+somentePositivos :: [Int] -> [Int]
+somentePositivos [] = []
+somentePositivos (c:cs)
+		|  c >= 0 = [c] ++ somentePositivos cs
+		| otherwise = somentePositivos cs
+
+produtoLista :: [Int] -> Int
+produtoLista [] = 1
+produtoLista (c:cs) =  c * produtoLista cs
+
+stringsCincoCaracteres :: [String] -> [String]
+stringsCincoCaracteres [] = []
+stringsCincoCaracteres (c:cs)
+		| validaStringCinco c 0 = [c] ++ stringsCincoCaracteres cs
+		| otherwise = stringsCincoCaracteres cs
+
+validaStringCinco :: String -> Int -> Bool
+validaStringCinco [] num
+		| num >= 5 = True
+		| otherwise = False
+validaStringCinco (c:cs) num = validaStringCinco cs (num + 1)
+
+retornaPares :: [Int] -> [Int]
+retornaPares [] = []
+retornaPares (h:t)
+		| h `mod` 2 == 0 = [h] ++ retornaPares t
+		| otherwise = retornaPares t
+
+tamanhoStrings :: [String] -> [(String,Int)]
+tamanhoStrings [] = []
+tamanhoStrings (h:t) = let tam = contaString h in [(h,tam)] ++ tamanhoStrings t
+
+contaString :: String -> Int
+contaString [] = 0
+contaString (h:t) = 1 + contaString t
+
+mediaLista :: [Int] -> Float
+mediaLista lista = fazOperacaoMediaLista lista 0 0
+
+fazOperacaoMediaLista :: [Int] -> Int -> Int -> Float
+fazOperacaoMediaLista [] soma cont = fromIntegral soma / fromIntegral cont
+fazOperacaoMediaLista (h:t) soma cont = fazOperacaoMediaLista t (soma + h) (cont + 1)
+
+
+listasEmComum :: [Int] -> [Int] -> [Int]
+listasEmComum [] _ = []
+listasEmComum (h:t) lista
+		| verTaLista lista h == True = h : listasEmComum t lista
+		| otherwise = listasEmComum t lista
+
+verTaLista :: [Int] -> Int -> Bool
+verTaLista [] _ = False
+verTaLista (h:t) x
+		| h == x = True
+		| otherwise = verTaLista t x
+
+removeRepetidos :: [Int] -> [Int]
+removeRepetidos [] = []
+removeRepetidos (h:t)
+		| verTaLista t h == True = removeRepetidos t
+		| otherwise = h : removeRepetidos t
+
+
+listaStrPre :: [String] -> String -> [String]
+listaStrPre [] _ = []
+listaStrPre (h:t) x
+		| prefixoStr h x == True = [h] ++ listaStrPre t x
+		| otherwise = listaStrPre t x
+
+prefixoStr :: String -> String -> Bool
+prefixoStr _ [] = True
+prefixoStr (h:t) (c:s) 
+		| h == c = prefixoStr t s
+		| otherwise = False
+
+listaInversa :: [Int] -> [Int]
+listaInversa [] = []
+listaInversa (h:t) = listaInversa t ++ [h]
+
+geraMatriz :: Int -> Int -> [[Int]]
+geraMatriz 0 _ = []
+geraMatriz l c = [geraColunas c] ++  geraMatriz (l-1) c
+
+geraColunas :: Int -> [Int]
+geraColunas 0 = []
+geraColunas c = [0] ++ geraColunas (c-1)
+
+type Matriz = [[Int]]
+
+matrizExemplo :: Matriz
+matrizExemplo = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
+
+alteraMatriz :: [[Int]] -> Int -> Int -> [[Int]]
+alteraMatriz [] _ _ = []
+alteraMatriz (h:t) 1 c = [alteraColunaMat h c] ++ t
+alteraMatriz (h:t) l c = [h] ++ alteraMatriz t (l-1) c
+
+
+alteraColunaMat :: [Int] -> Int -> [Int]
+alteraColunaMat [] _ = []
+alteraColunaMat (h:t) 0 = [1] ++ t
+alteraColunaMat (h:t) c = [h] ++ alteraColunaMat t (c-1)
