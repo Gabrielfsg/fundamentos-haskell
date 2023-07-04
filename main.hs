@@ -307,6 +307,21 @@ vizinho (h:t) x y
 	| h == (x,y) || h == (y,x) = True
 	| otherwise = vizinho t x y
 
+conectados :: Grafo -> Int -> Int -> [Int] -> Bool
+conectados _ 0 _ _ = False
+conectados grafo v1 v2 lista
+    | vizinho grafo v1 v2 == True = True
+    | otherwise = let y = retornaVizinho grafo v1 lista in conectados grafo y v2 (v1 : lista)
+
+										
+retornaVizinho :: Grafo -> Int -> [Int] -> Int
+retornaVizinho [] _ _  =  0
+retornaVizinho ((y,z):t) x lista
+	| x == y && verTaLista lista z == False = z
+	| x == z && verTaLista lista y == False = y
+	| otherwise = retornaVizinho t x lista
+
+
 verificaValorListaIgualX :: [Int] -> Int -> Bool
 verificaValorListaIgualX [] _ = True
 verificaValorListaIgualX (c:cs) x
@@ -419,5 +434,151 @@ alteraMatriz (h:t) l c = [h] ++ alteraMatriz t (l-1) c
 
 alteraColunaMat :: [Int] -> Int -> [Int]
 alteraColunaMat [] _ = []
-alteraColunaMat (h:t) 0 = [1] ++ t
+alteraColunaMat (h:t) 1 = [1] ++ t
 alteraColunaMat (h:t) c = [h] ++ alteraColunaMat t (c-1)
+
+menuSoma :: IO ()
+menuSoma = do
+    putStr "Entre com o primeiro numero: "
+    x <- getLine
+    putStr "Entre com o segundo numero: "
+    y <- getLine
+    let n1 = read x :: Int
+        n2 = read y :: Int
+    putStr "A soma e': "
+    print (n1 + n2)
+
+split :: String -> Char -> String -> [String]
+split [] _ lista = [lista]  
+split (h:t) x lista
+    | h == x = lista : split t x [] 
+    | otherwise = split t x (lista ++ [h]) 
+
+
+percorreString :: String -> String
+percorreString [] = ""
+percorreString (h:t) = [h] ++ percorreString t
+
+estaOrdenada :: [Int] -> Bool
+estaOrdenada lista = verOrdem lista []
+
+verOrdem :: [Int] -> [Int] -> Bool
+verOrdem [] _ = True
+verOrdem (h:t) [] = verOrdem t [h]
+verOrdem (h:t) (x:z)
+		| h > x = verOrdem t ( [h] ++ (x:z))
+		| otherwise = False
+
+
+palindromo :: String -> Bool 
+palindromo lista = verPalindromo lista listaInversa
+	where listaInversa = inversoStr lista
+
+verPalindromo :: String -> String -> Bool 
+verPalindromo [] [] = True
+verPalindromo (h1:t1) (h2:t2)
+		| h1 /= h2 = False
+		| otherwise = verPalindromo t1 t2
+
+inversoStr :: String -> String
+inversoStr [] = ""
+inversoStr (h:t) = inversoStr t ++ [h]
+
+ordena :: [Int] -> [Int]
+ordena lista = quicksort1 lista
+
+quicksort1 :: (Ord a) => [a] -> [a]
+quicksort1 [] = []
+quicksort1 (x:xs) =
+  let smallerSorted = quicksort1 [a | a <- xs, a <= x]
+      biggerSorted = quicksort1 [a | a <- xs, a > x]
+  in  smallerSorted ++ [x] ++ biggerSorted
+
+lengthStr :: String -> Int
+lengthStr [] = 0
+lengthStr (h:t) = 1 + lengthStr t
+
+strTam :: [String] -> [(String,Int)]
+strTam [] = []
+strTam (h:t) = [(h, lengthStr h)] ++ strTam t
+
+concatenarLista :: [Int] -> [Int] -> [Int]
+concatenarLista x y = x ++ y
+
+henrique :: [Int] -> [(Int,Int)]
+henrique lista = pedro lista 0
+
+pedro :: [Int] -> Int -> [(Int,Int)]
+pedro [] _ = []
+pedro (c:cs) x = [(x,c)] ++ pedro cs (x+1)
+
+
+-- Função auxiliar para verificar se um caractere é um operador
+ehOperador :: Char -> Bool
+ehOperador c = c `elem` ['+', '-', '*', '/']
+
+-- Função auxiliar para executar uma operação aritmética
+executarOperacao :: Char -> Float -> Float -> Float
+executarOperacao '+' x y = x + y
+executarOperacao '-' x y = x - y
+executarOperacao '*' x y = x * y
+executarOperacao '/' x y = x / y
+
+-- Função principal que avalia a expressão
+avalia :: String -> Float
+avalia expressao = avaliarOperacoes expressaoSemEspacos [] []
+  where
+    -- Remove espaços em branco desnecessários
+    expressaoSemEspacos = trace ("expressaoSemEspacos: " ++ filter (/= ' ') expressao) $ filter (/= ' ') expressao
+
+    -- Função auxiliar para extrair um número da expressão
+    extrairNumero :: String -> (Float, String)
+    extrairNumero "" = (0.0, "")
+    extrairNumero cs =
+      let (numStr, resto) = span isDigit cs
+       in (read numStr, resto)
+
+    -- Função auxiliar para extrair uma subexpressão entre parênteses
+    extrairSubexpressao :: String -> (String, String)
+    extrairSubexpressao = extrairSubexpressaoAux 0
+      where
+        extrairSubexpressaoAux :: Int -> String -> (String, String)
+        extrairSubexpressaoAux _ "" = ("", "")
+        extrairSubexpressaoAux contador (c:cs)
+          | c == '(' =
+            let (subexp, resto) = extrairSubexpressaoAux (contador + 1) cs
+             in (c : subexp, resto)
+          | c == ')' =
+            if contador == 0
+              then ("", cs)
+              else let (subexp, resto) = extrairSubexpressaoAux (contador - 1) cs
+                    in (c : subexp, resto)
+          | otherwise =
+            let (subexp, resto) = extrairSubexpressaoAux contador cs
+             in (c : subexp, resto)
+
+    -- Função auxiliar para avaliar as operações
+    avaliarOperacoes :: String -> [Float] -> [Char] -> Float
+    avaliarOperacoes "" operandos [] = head operandos
+    avaliarOperacoes "" operandos (op:ops) = avaliarOperacoes "" (executarOperacao op (head (tail operandos)) (head operandos) : drop 2 operandos) ops
+    avaliarOperacoes (c:cs) operandos operadores
+      | isDigit c =
+        let (numero, resto) = extrairNumero (c:cs)
+         in avaliarOperacoes resto (numero : operandos) operadores
+      | c == '(' =
+        let (subexp, resto) = extrairSubexpressao cs
+            resultadoSubexp = avaliarOperacoes subexp [] []
+         in avaliarOperacoes resto (resultadoSubexp : operandos) operadores
+      | ehOperador c =
+        if null operadores || (precedencia c > precedencia (head operadores))
+          then avaliarOperacoes cs operandos (c:operadores)
+          else let novoOperando = executarOperacao (head operadores) (head (tail operandos)) (head operandos)
+                in avaliarOperacoes (c:cs) (novoOperando : drop 2 operandos) (tail operadores)
+      | otherwise = error "Caractere inválido na expressão"
+      where
+        precedencia :: Char -> Int
+        precedencia '+' = 1
+        precedencia '-' = 1
+        precedencia '*' = 2
+        precedencia '/' = 2
+        precedencia _ = 0
